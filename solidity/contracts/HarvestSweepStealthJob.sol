@@ -11,8 +11,7 @@ Coded for Yearn Finance with ♥ by
 ██████╔╝███████╗██║░░░░░██║  ░░╚██╔╝░╚██╔╝░╚█████╔╝██║░╚███║██████╔╝███████╗██║░░██║███████╗██║░░██║██║░╚███║██████╔╝
 ╚═════╝░╚══════╝╚═╝░░░░░╚═╝  ░░░╚═╝░░░╚═╝░░░╚════╝░╚═╝░░╚══╝╚═════╝░╚══════╝╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚═╝░░╚══╝╚═════╝░
 
-https://defi.sucks
-*/
+https://defi.sucks*/
 
 pragma solidity >=0.8.9 <0.9.0;
 
@@ -22,7 +21,7 @@ import './utils/Keep3rMeteredStealthJob.sol';
 import 'interfaces/IV2Keep3rCreditWindow.sol';
 import 'interfaces/IV2Keep3rStealthJob.sol';
 
-contract HarvestSweepV2Keep3rStealthJob is
+contract HarvestSweepStealthJob is
   IV2Keep3rCreditWindow,
   IV2Keep3rStealthJob,
   V2KeeperJobPacked,
