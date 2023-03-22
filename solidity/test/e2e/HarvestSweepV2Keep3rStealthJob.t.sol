@@ -18,4 +18,15 @@ contract CommonE2EBase is DSTestFull {
     vm.createSelectFork(vm.rpcUrl('mainnet'), _FORK_BLOCK);
     vm.prank(_owner);
   }
+
+  // Worked 0x9d7cd0041abd91f281e282db3fba7a9db9e4cc8b (harvest public 0xf4F748D45E03a70a9473394B28c3C7b5572DfA82) at ts 1678931363 (block 16841103)
+  /**
+   * @notice Test if a strategy which is not profitable and when not in the credit window is not workable
+   */
+  function testShouldBeNonWorkableWhenOutsideCreditWindow() external {}
+
+  /**
+   * @notice Test if a strategy which is not profitable and when in the credit window is workable
+   */
+  function testShouldBeWorkableWhenInCreditWindow() external {}
 }
