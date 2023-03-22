@@ -21,7 +21,7 @@ import {Test} from 'forge-std/Test.sol';
  *     callData: '0x36df7ea50000000000000000000000007c85c0a8e2a45eeff98a10b6037f70daf714b7cf',
  *     txHash: '0x5026697c0516aabb8f9790669fa983015aa1169dc8c9bb6c478f9e7d168b8855',
  */
-contract HarvestSweepStealthJobTest is Test {
+contract HarvestSweepStealthJob_E2E is Test {
   uint256 internal constant _FORK_BLOCK = 15_514_011;
   address internal constant STRATEGY = 0x7C85c0a8E2a45EefF98A10b6037f70daf714B7cf;
 
@@ -40,8 +40,9 @@ contract HarvestSweepStealthJobTest is Test {
 
   function setUp() public {
     vm.createSelectFork(vm.rpcUrl('mainnet'), _FORK_BLOCK);
-    vm.deal(proxyGovernor, 1000 ether);
-    vm.deal(v2KeeperGovernor, 1000 ether);
+    deal(proxyGovernor, 1000 ether);
+    deal(v2KeeperGovernor, 1000 ether);
+    deal(address(keeper), 1000 ether);
 
     // Gib $KPR
     deal(KP3R_V1_ADDRESS, keeper, MIN_BOND + MAX_BOND);
@@ -86,12 +87,23 @@ contract HarvestSweepStealthJobTest is Test {
 
     vm.prank(v2KeeperGovernor);
     _job.addStrategy(STRATEGY, 0);
+
+    deal(address(_job), 1000 ether);
+    vm.prank(address(_job));
+    keep3rV2.bondedPayment(keeper, 420);
   }
 
   /**
    * @notice Test if a strategy which is profitable is workable
    */
-  function testShouldBeWorkableWhenProfitable() external {}
+  function testShouldBeWorkableWhenProfitable() external {
+    vm.fee(50 * 10 ** 9);
+
+    vm.prank(keeper, keeper);
+    stealthRelayer.executeAndPay(
+      address(_job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
+    );
+  }
 
   /**
    * @notice Test if a strategy which is not profitable and when not in the credit window is not workable

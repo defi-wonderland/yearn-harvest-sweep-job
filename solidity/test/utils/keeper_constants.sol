@@ -29,13 +29,6 @@ address constant HARVEST_V2_KEEP3R_STEALTH_JOB = address(0x2150b45626199CFa50893
 address constant STR_CONVEX_ST_ETH = address(0x6C0496fC55Eb4089f1Cf91A4344a2D56fAcE51e3);
 
 /*///////////////////////////////////////////////////////////////
-                                Misc                       
-//////////////////////////////////////////////////////////////*/
-
-address constant ZERO_ADDRESS = address(0x0000000000000000000000000000000000000000);
-address constant ETH_ADDRESS = address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
-
-/*///////////////////////////////////////////////////////////////
                          Keep3r V2 related                  
 //////////////////////////////////////////////////////////////*/
 
@@ -48,3 +41,10 @@ address constant KP3R_V1_ADDRESS = address(0x1cEB5cB57C4D4E2b2433641b95Dd330A331
 address constant KP3R_V1_PROXY_ADDRESS = address(0x976b01c02c636Dd5901444B941442FD70b86dcd5);
 address constant KP3R_V1_PROXY_GOVERNANCE_ADDRESS = address(0x0D5Dc686d0a2ABBfDaFDFb4D0533E886517d4E83);
 address constant KP3R_V1_GOVERNANCE_ADDRESS = address(0xFC48aC750959d5d5aE9A4bb38f548A7CA8763F8d);
+
+/*///////////////////////////////////////////////////////////////
+                                Misc                       
+//////////////////////////////////////////////////////////////*/
+
+address constant ZERO_ADDRESS = address(0x0000000000000000000000000000000000000000);
+address constant ETH_ADDRESS = address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
