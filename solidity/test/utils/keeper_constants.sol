@@ -48,3 +48,4 @@ address constant KP3R_V1_GOVERNANCE_ADDRESS = address(0xFC48aC750959d5d5aE9A4bb3
 
 address constant ZERO_ADDRESS = address(0x0000000000000000000000000000000000000000);
 address constant ETH_ADDRESS = address(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
+address constant WETH_ADDRESS = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);

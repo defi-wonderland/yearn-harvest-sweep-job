@@ -12,6 +12,8 @@ import {IStealthVault} from 'interfaces/external/IStealthVault.sol';
 import {IV2Keeper} from 'interfaces/external/IV2Keeper.sol';
 
 import {IERC20} from 'isolmate/interfaces/tokens/IERC20.sol';
+import {OracleLibrary} from '@uniswap/v3-periphery/contracts/libraries/OracleLibrary.sol';
+
 import {Test} from 'forge-std/Test.sol';
 
 /**
@@ -22,6 +24,9 @@ import {Test} from 'forge-std/Test.sol';
  *     txHash: '0x5026697c0516aabb8f9790669fa983015aa1169dc8c9bb6c478f9e7d168b8855',
  */
 contract HarvestSweepStealthJob_E2E is Test {
+  event KeeperWorked(address _strategy);
+  event Harvested(uint256 _profit, uint256 _loss, uint256 _debtPayment, uint256 _debtOutstanding);
+
   uint256 internal constant _FORK_BLOCK = 15_514_011;
   address internal constant STRATEGY = 0x7C85c0a8E2a45EefF98A10b6037f70daf714B7cf;
 
@@ -97,12 +102,36 @@ contract HarvestSweepStealthJob_E2E is Test {
    * @notice Test if a strategy which is profitable is workable
    */
   function testShouldBeWorkableWhenProfitable() external {
+    // Set block.basefee to 50 gwei
     vm.fee(50 * 10 ** 9);
 
+    // Keep track of the work completed previously
+    uint256 _previousWorkCompleted = keep3rV2.workCompleted(keeper);
+
+    // Check: Correct events emitted?
+    vm.expectEmit(true, true, true, true, address(STRATEGY));
+    emit Harvested(0, 1, 0, 0);
+
+    vm.expectEmit(true, true, true, true, address(_job));
+    emit KeeperWorked(STRATEGY);
+
+    // Prank both msg.sender and tx.origin
     vm.prank(keeper, keeper);
+
+    // Track the gas consumption
+    uint256 _gasUsed = gasleft();
+
+    // Work the job
     stealthRelayer.executeAndPay(
       address(_job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
     );
+
+    // Adding the 21k of a normal tx from an EOA
+    _gasUsed = _gasUsed - gasleft() + 21_000;
+
+    // Check: Received correct reward?
+    uint256 _expectedReward = _getExpectedReward(_gasUsed);
+    assertApproxEqAbs(keep3rV2.workCompleted(keeper) - _previousWorkCompleted, _expectedReward * 112 / 100, 0.015 ether);
   }
 
   /**
@@ -114,4 +143,13 @@ contract HarvestSweepStealthJob_E2E is Test {
    * @notice Test if a strategy which is not profitable and when in the credit window is workable
    */
   function testShouldBeWorkableWhenInCreditWindow() external {}
+
+  function _getExpectedReward(uint256 _gasUsed) internal returns (uint256 expectedReward) {
+    // Get the twap
+    uint32 _twapTime = 600;
+    (int24 meanTick,) = OracleLibrary.consult(KP3R_WETH_V3_POOL_ADDRESS, _twapTime);
+
+    expectedReward =
+      OracleLibrary.getQuoteAtTick(meanTick, uint128(_gasUsed * block.basefee), WETH_ADDRESS, KP3R_WETH_V3_POOL_ADDRESS);
+  }
 }
