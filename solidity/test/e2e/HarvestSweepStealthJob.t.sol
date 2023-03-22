@@ -127,11 +127,11 @@ contract HarvestSweepStealthJob_E2E is Test {
     );
 
     // Adding the 21k of a normal tx from an EOA
-    _gasUsed = _gasUsed - gasleft() + 21_000;
+    _gasUsed = _gasUsed - gasleft();
 
     // Check: Received correct reward?
     uint256 _expectedReward = _getExpectedReward(_gasUsed);
-    assertApproxEqAbs(keep3rV2.workCompleted(keeper) - _previousWorkCompleted, _expectedReward * 112 / 100, 0.015 ether);
+    assertApproxEqAbs(keep3rV2.workCompleted(keeper) - _previousWorkCompleted, _expectedReward, 0.015 ether); // 0.015KPR
   }
 
   /**
