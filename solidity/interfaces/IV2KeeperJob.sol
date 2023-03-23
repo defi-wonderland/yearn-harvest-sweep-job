@@ -1,20 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4 <0.9.0;
 
-import './external/IV2Keeper.sol';
+import {IV2Keeper} from './external/IV2Keeper.sol';
 
 interface IV2KeeperJob {
-  // errors
-
-  /// @notice Throws if the strategy being added has already been added
-  error StrategyAlreadyAdded();
-  /// @notice Throws if the strategy being summoned is not added
-  error StrategyNotAdded();
-  /// @notice Throws if a keeper tries to work a non-workable strategy
-  error StrategyNotWorkable();
-  /// @notice Throws if the cooldown is being set to 0
-  error ZeroCooldown();
-
   // events
 
   /// @notice Emitted when a new strategy is added
@@ -46,6 +35,17 @@ interface IV2KeeperJob {
   /// @notice Emitted when a new cooldown is set
   /// @param _newWorkCooldown The new cooldown (seconds)
   event WorkCooldownSet(uint256 _newWorkCooldown);
+
+  // errors
+
+  /// @notice Throws if the strategy being added has already been added
+  error StrategyAlreadyAdded();
+  /// @notice Throws if the strategy being summoned is not added
+  error StrategyNotAdded();
+  /// @notice Throws if a keeper tries to work a non-workable strategy
+  error StrategyNotWorkable();
+  /// @notice Throws if the cooldown is being set to 0
+  error ZeroCooldown();
 
   // views
 

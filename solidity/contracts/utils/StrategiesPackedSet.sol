@@ -28,7 +28,7 @@ library StrategiesPackedSet {
    * Returns true if the value was added to the _set, that is if it was not
    * already present.
    */
-  function add(Set storage _set, address _strategy, uint256 _requiredAmount) internal returns (bool) {
+  function add(Set storage _set, address _strategy, uint256 _requiredAmount) internal returns (bool _success) {
     if (!contains(_set, _strategy)) {
       bytes32 _value = bytes32(
         uint256(uint160(_strategy)) // 160 bits
@@ -53,7 +53,7 @@ library StrategiesPackedSet {
    * Returns true if the value was removed from the _set, that is if it was
    * present.
    */
-  function remove(Set storage _set, address _strategy) internal returns (bool) {
+  function remove(Set storage _set, address _strategy) internal returns (bool _success) {
     uint256 _valueIndex = _set.indexes[_strategy];
 
     if (_valueIndex != 0) {
@@ -123,14 +123,14 @@ library StrategiesPackedSet {
   /**
    * @dev Returns true if the value is in the _set. O(1).
    */
-  function contains(Set storage _set, address _value) internal view returns (bool) {
+  function contains(Set storage _set, address _value) internal view returns (bool _contains) {
     return _set.indexes[_value] != 0;
   }
 
   /**
    * @dev Returns the number of values on the _set. O(1).
    */
-  function length(Set storage _set) internal view returns (uint256) {
+  function length(Set storage _set) internal view returns (uint256 _length) {
     return _set.values.length;
   }
 
@@ -142,7 +142,7 @@ library StrategiesPackedSet {
    *
    * - `index` must be strictly less than {length}.
    */
-  function at(Set storage _set, uint256 _index) internal view returns (bytes32) {
+  function at(Set storage _set, uint256 _index) internal view returns (bytes32 _value) {
     return _set.values[_index];
   }
 
@@ -150,7 +150,7 @@ library StrategiesPackedSet {
    * @dev Returns the value associated with the `_strategy` address. 0(1)
    *      This is a convenience overload
    */
-  function at(Set storage _set, address _strategy) internal view returns (bytes32) {
+  function at(Set storage _set, address _strategy) internal view returns (bytes32 _value) {
     // Non existing value (0 is the safeguard)?
     if (_set.indexes[_strategy] == 0) return bytes32(0);
 
@@ -165,7 +165,7 @@ library StrategiesPackedSet {
    * this function has an unbounded cost, and using it as part of a state-changing function may render the function
    * uncallable if the _set grows to a point where copying to memory consumes too much gas to fit in a block.
    */
-  function values(Set storage _set) internal view returns (bytes32[] memory) {
+  function values(Set storage _set) internal view returns (bytes32[] memory _values) {
     return _set.values;
   }
 
@@ -173,7 +173,7 @@ library StrategiesPackedSet {
    * @dev Return the address stored in the first 20 bytes
    *      For use on bytes32 type (use StrategiesPackedSet for bytes32).
    */
-  function strategyAddress(bytes32 _value) internal pure returns (address) {
+  function strategyAddress(bytes32 _value) internal pure returns (address _strategy) {
     return address(uint160(uint256(_value)));
   }
 
@@ -181,7 +181,7 @@ library StrategiesPackedSet {
    * @dev Return the lastWorkAt stored after 20 bytes, in the next 48 bits
    *      For use on bytes32 type (use StrategiesPackedSet for bytes32).
    */
-  function lastWorkAt(bytes32 _value) internal pure returns (uint256) {
+  function lastWorkAt(bytes32 _value) internal pure returns (uint256 _timestamp) {
     return uint256(_value >> 160) & 0xFFFFFFFFFFFF;
   }
 
@@ -189,7 +189,7 @@ library StrategiesPackedSet {
    * @dev Return the requiredAmount stored in the last 48 bytes
    *      For use on bytes32 type (use StrategiesPackedSet for bytes32).
    */
-  function requiredAmount(bytes32 _value) internal pure returns (uint256) {
+  function requiredAmount(bytes32 _value) internal pure returns (uint256 _requiredAmount) {
     return uint256(_value >> 208) & 0xFFFFFFFFFFFF;
   }
 }

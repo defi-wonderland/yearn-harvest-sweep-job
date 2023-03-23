@@ -2,13 +2,6 @@
 pragma solidity >=0.8.4 <0.9.0;
 
 interface IKeep3rV2 {
-  /// @notice Stores the tick information of the different liquidity pairs
-  struct TickCache {
-    int56 current; // Tracks the current tick
-    int56 difference; // Stores the difference between the current tick and the last tick
-    uint256 period; // Stores the period at which the last observation was made
-  }
-
   // Events
 
   /// @notice Emitted when the Keep3rHelper address is changed
@@ -335,6 +328,15 @@ interface IKeep3rV2 {
 
   /// @notice Throws when a job or keeper is not disputed and someone tries to resolve the dispute
   error NotDisputed();
+
+  // Struct
+
+  /// @notice Stores the tick information of the different liquidity pairs
+  struct TickCache {
+    int56 current; // Tracks the current tick
+    int56 difference; // Stores the difference between the current tick and the last tick
+    uint256 period; // Stores the period at which the last observation was made
+  }
 
   // Variables
 

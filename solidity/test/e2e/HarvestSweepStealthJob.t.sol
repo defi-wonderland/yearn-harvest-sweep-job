@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4 <0.9.0;
 
-// ignore: defi-wonderland/import-statement-format
+// solhint-disable-next-line defi-wonderland/import-statement-format
 import 'test/utils/keeper_constants.sol';
 
 import {HarvestSweepStealthJob} from 'contracts/HarvestSweepStealthJob.sol';
@@ -29,24 +29,26 @@ contract E2EHarvestSweepStealthJob is Test {
   event KeeperWorked(address _strategy);
   event Harvested(uint256 _profit, uint256 _loss, uint256 _debtPayment, uint256 _debtOutstanding);
 
-  uint256 internal constant _FORK_BLOCK = 15_514_011;
-  address internal constant STRATEGY = 0x7C85c0a8E2a45EefF98A10b6037f70daf714B7cf;
+  // forgefmt:disable-start
+  uint256 public constant FORK_BLOCK  = 15_514_011;
+  address public constant STRATEGY    = 0x7C85c0a8E2a45EefF98A10b6037f70daf714B7cf;
 
-  address internal keeper = makeAddr('keeper');
-  address internal proxyGovernor = KP3R_V1_PROXY_GOVERNANCE_ADDRESS;
-  address internal v2KeeperGovernor = V2_KEEPER_GOVERNOR;
+  address public constant proxyGovernor    = KP3R_V1_PROXY_GOVERNANCE_ADDRESS;
+  address public constant v2KeeperGovernor = V2_KEEPER_GOVERNOR;
 
-  IKeep3rV2 internal keep3rV2 = IKeep3rV2(KEEP3R_V2);
-  IV2Keeper internal v2Keeper = IV2Keeper(V2_KEEPER);
-  IStealthRelayer internal stealthRelayer = IStealthRelayer(STEALTH_RELAYER);
-  IStealthVault internal stealthVault = IStealthVault(STEALTH_VAULT);
-  IERC20 internal kprToken = IERC20(KP3R_V1_ADDRESS);
-  IBaseStrategy internal strategy = IBaseStrategy(STRATEGY);
+  IKeep3rV2       public constant keep3rV2        = IKeep3rV2(KEEP3R_V2);
+  IV2Keeper       public constant v2Keeper        = IV2Keeper(V2_KEEPER);
+  IStealthRelayer public constant stealthRelayer  = IStealthRelayer(STEALTH_RELAYER);
+  IStealthVault   public constant stealthVault    = IStealthVault(STEALTH_VAULT);
+  IERC20          public constant kprToken        = IERC20(KP3R_V1_ADDRESS);
+  IBaseStrategy   public constant strategy        = IBaseStrategy(STRATEGY);
+  // forgefmt:disable-end
 
-  HarvestSweepStealthJob internal _job;
+  address public keeper = makeAddr('keeper');
+  HarvestSweepStealthJob public job;
 
   function setUp() public {
-    vm.createSelectFork(vm.rpcUrl('mainnet'), _FORK_BLOCK);
+    vm.createSelectFork(vm.rpcUrl('mainnet'), FORK_BLOCK);
 
     // Gib ETH
     deal(proxyGovernor, 1000 ether);
@@ -56,7 +58,7 @@ contract E2EHarvestSweepStealthJob is Test {
     // Gib $KPR
     deal(KP3R_V1_ADDRESS, keeper, MIN_BOND + MAX_BOND);
 
-    _job = new HarvestSweepStealthJob(
+    job = new HarvestSweepStealthJob(
       V2_KEEPER_GOVERNOR,
       MECHANICS_REGISTRY,
       STEALTH_RELAYER,
@@ -87,19 +89,19 @@ contract E2EHarvestSweepStealthJob is Test {
     vm.stopPrank();
 
     vm.startPrank(v2KeeperGovernor);
-    v2Keeper.addJob(address(_job));
-    stealthRelayer.addJob(address(_job));
-    keep3rV2.addJob(address(_job));
+    v2Keeper.addJob(address(job));
+    stealthRelayer.addJob(address(job));
+    keep3rV2.addJob(address(job));
     vm.stopPrank();
 
     vm.prank(proxyGovernor);
-    keep3rV2.forceLiquidityCreditsToJob(address(_job), 10 ether);
+    keep3rV2.forceLiquidityCreditsToJob(address(job), 10 ether);
 
     vm.prank(v2KeeperGovernor);
-    _job.addStrategy(STRATEGY, 0);
+    job.addStrategy(STRATEGY, 0);
 
-    deal(address(_job), 1000 ether);
-    vm.prank(address(_job));
+    deal(address(job), 1000 ether);
+    vm.prank(address(job));
     keep3rV2.bondedPayment(keeper, 420);
   }
 
@@ -117,7 +119,7 @@ contract E2EHarvestSweepStealthJob is Test {
     vm.expectEmit(true, true, true, true, address(STRATEGY));
     emit Harvested(0, 1, 0, 0);
 
-    vm.expectEmit(true, true, true, true, address(_job));
+    vm.expectEmit(true, true, true, true, address(job));
     emit KeeperWorked(STRATEGY);
 
     // Prank both msg.sender and tx.origin
@@ -128,7 +130,7 @@ contract E2EHarvestSweepStealthJob is Test {
 
     // Work the job
     stealthRelayer.executeAndPay(
-      address(_job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
+      address(job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
     );
 
     // Adding the 21k of a normal tx from an EOA

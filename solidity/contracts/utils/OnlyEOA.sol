@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.9 <0.9.0;
 
-import 'interfaces/utils/IOnlyEOA.sol';
-import './Governable.sol';
+import {IOnlyEOA} from 'interfaces/utils/IOnlyEOA.sol';
+import {Governable} from './Governable.sol';
 
 abstract contract OnlyEOA is IOnlyEOA, Governable {
   /// @inheritdoc IOnlyEOA

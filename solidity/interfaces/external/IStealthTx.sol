@@ -7,9 +7,9 @@ interface IStealthTx {
   event PenaltySet(uint256 _penalty);
   event MigratedStealthVault(address _migratedTo);
 
-  function stealthVault() external view returns (address);
+  function stealthVault() external view returns (address _stealthVault);
 
-  function penalty() external view returns (uint256);
+  function penalty() external view returns (uint256 _amount);
 
   function setStealthVault(address _stealthVault) external;
 

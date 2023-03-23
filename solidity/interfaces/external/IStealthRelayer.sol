@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import './IStealthTx.sol';
+import {IStealthTx} from './IStealthTx.sol';
 
 interface IStealthRelayer is IStealthTx {
   function caller() external view returns (address _caller);

@@ -2,11 +2,11 @@
 pragma solidity >=0.6.8;
 
 interface IV2Keeper {
-  // Getters
-  function jobs() external view returns (address[] memory);
-
   event JobAdded(address _job);
   event JobRemoved(address _job);
+
+  // Getters
+  function jobs() external view returns (address[] memory _jobs);
 
   // Setters
   function addJobs(address[] calldata _jobs) external;

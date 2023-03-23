@@ -32,11 +32,11 @@ interface IBaseStrategy {
 
   function setRewards(address _rewards) external;
 
-  function tendTrigger(uint256 _callCost) external view returns (bool);
+  function tendTrigger(uint256 _callCost) external view returns (bool _tend);
 
   function tend() external;
 
-  function harvestTrigger(uint256 _callCost) external view returns (bool);
+  function harvestTrigger(uint256 _callCost) external view returns (bool _harvest);
 
   function harvest() external;
 

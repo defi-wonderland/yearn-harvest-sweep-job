@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.9 <0.9.0;
 
-import './Keep3rMeteredJob.sol';
-import './Keep3rBondedJob.sol';
-import './OnlyEOA.sol';
+import {Keep3rMeteredJob, Keep3rJob} from './Keep3rMeteredJob.sol';
+import {Keep3rBondedJob} from './Keep3rBondedJob.sol';
+import {OnlyEOA} from './OnlyEOA.sol';
 
 abstract contract Keep3rMeteredPublicJob is Keep3rMeteredJob, Keep3rBondedJob, OnlyEOA {
   // internals

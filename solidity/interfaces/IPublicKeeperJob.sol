@@ -1,23 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4 <0.9.0;
 
-import './external/IKeeperWrapper.sol';
-import './external/IVaultRegistry.sol';
+import {IKeeperWrapper} from './external/IKeeperWrapper.sol';
+import {IVaultRegistry} from './external/IVaultRegistry.sol';
 
 interface IPublicKeeperJob {
-  // errors
-
-  /// @notice Throws if the strategy being worked is not valid
-  error InvalidStrategy();
-  /// @notice Throws if the strategy being added has already been added
-  error StrategyAlreadyIgnored();
-  /// @notice Throws if the strategy being summoned is not added
-  error StrategyNotIgnored();
-  /// @notice Throws if a keeper tries to work a non-workable strategy
-  error StrategyNotWorkable();
-  /// @notice Throws if the cooldown is being set to 0
-  error ZeroCooldown();
-
   // events
 
   /// @notice Emitted when a strategy is worked
@@ -35,6 +22,19 @@ interface IPublicKeeperJob {
   /// @notice Emitted when a strategy is removed from the ignore list
   /// @param _strategy Address of the strategy being removed from the ignore list
   event StrategyAcknowledged(address _strategy);
+
+  // errors
+
+  /// @notice Throws if the strategy being worked is not valid
+  error InvalidStrategy();
+  /// @notice Throws if the strategy being added has already been added
+  error StrategyAlreadyIgnored();
+  /// @notice Throws if the strategy being summoned is not added
+  error StrategyNotIgnored();
+  /// @notice Throws if a keeper tries to work a non-workable strategy
+  error StrategyNotWorkable();
+  /// @notice Throws if the cooldown is being set to 0
+  error ZeroCooldown();
 
   // views
 

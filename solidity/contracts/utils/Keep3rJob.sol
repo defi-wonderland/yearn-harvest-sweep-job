@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.9 <0.9.0;
 
-import './Governable.sol';
-import 'interfaces/utils/IKeep3rJob.sol';
-import 'interfaces/external/IKeep3rV2.sol';
+import {Governable} from './Governable.sol';
+import {IKeep3rJob} from 'interfaces/utils/IKeep3rJob.sol';
+import {IKeep3rV2} from 'interfaces/external/IKeep3rV2.sol';
 
 abstract contract Keep3rJob is IKeep3rJob, Governable {
   /// @inheritdoc IKeep3rJob

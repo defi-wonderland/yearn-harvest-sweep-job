@@ -2,14 +2,14 @@
 
 pragma solidity >=0.8.9 <0.9.0;
 
-import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 
-import './utils/GasBaseFee.sol';
-import './utils/MachineryReady.sol';
-import './utils/StrategiesPackedSet.sol';
-import 'interfaces/IV2KeeperJob.sol';
-import 'interfaces/external/IV2Keeper.sol';
-import 'interfaces/external/IBaseStrategy.sol';
+import {GasBaseFee} from './utils/GasBaseFee.sol';
+import {MachineryReady, Governable} from './utils/MachineryReady.sol';
+import {StrategiesPackedSet} from './utils/StrategiesPackedSet.sol';
+import {IV2KeeperJob} from 'interfaces/IV2KeeperJob.sol';
+import {IV2Keeper} from 'interfaces/external/IV2Keeper.sol';
+import {IBaseStrategy} from 'interfaces/external/IBaseStrategy.sol';
 
 abstract contract V2KeeperJobPacked is IV2KeeperJob, MachineryReady, GasBaseFee {
   using StrategiesPackedSet for StrategiesPackedSet.Set;
@@ -142,7 +142,7 @@ abstract contract V2KeeperJobPacked is IV2KeeperJob, MachineryReady, GasBaseFee 
     emit StrategyRemoved(_strategy);
   }
 
-  function _workable(address _strategy) internal view virtual returns (bool) {
+  function _workable(address _strategy) internal view virtual returns (bool _isWorkable) {
     if (!_availableStrategies.contains(_strategy)) revert StrategyNotAdded();
     if (workCooldown == 0 || block.timestamp > _availableStrategies.at(_strategy).lastWorkAt() + workCooldown) {
       return true;

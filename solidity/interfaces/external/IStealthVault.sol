@@ -2,15 +2,15 @@
 pragma solidity ^0.8.4;
 
 interface IStealthVault {
-  function totalBonded() external view returns (uint256);
+  function totalBonded() external view returns (uint256 _amount);
 
-  function bonded(address) external view returns (uint256);
+  function bonded(address) external view returns (uint256 _amount);
 
-  function canUnbondAt(address) external view returns (uint256);
+  function canUnbondAt(address) external view returns (uint256 _timestamp);
 
-  function hashReportedBy(bytes32) external view returns (address);
+  function hashReportedBy(bytes32) external view returns (address _address);
 
-  function isStealthVault() external pure returns (bool);
+  function isStealthVault() external pure returns (bool _isStealthVault);
 
   function callers() external view returns (address[] memory _callersList);
 

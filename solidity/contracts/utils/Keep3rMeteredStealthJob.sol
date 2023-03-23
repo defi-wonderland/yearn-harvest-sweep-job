@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.9 <0.9.0;
 
-import './Keep3rMeteredJob.sol';
-import './Keep3rBondedJob.sol';
-import './OnlyEOA.sol';
+import {Keep3rMeteredJob, Keep3rJob, IKeep3rV2, IKeep3rHelper} from './Keep3rMeteredJob.sol';
+import {Keep3rBondedJob} from './Keep3rBondedJob.sol';
+import {OnlyEOA} from './OnlyEOA.sol';
 
-import 'interfaces/utils/IKeep3rStealthJob.sol';
-import 'interfaces/external/IStealthRelayer.sol';
+import {IKeep3rStealthJob} from 'interfaces/utils/IKeep3rStealthJob.sol';
+import {IStealthRelayer} from 'interfaces/external/IStealthRelayer.sol';
 
 abstract contract Keep3rMeteredStealthJob is IKeep3rStealthJob, Keep3rMeteredJob, Keep3rBondedJob, OnlyEOA {
   /// @inheritdoc IKeep3rStealthJob

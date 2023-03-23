@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.9 <0.9.0;
 
-import './Keep3rJob.sol';
-import 'interfaces/external/IKeep3rHelper.sol';
-import 'interfaces/utils/IKeep3rMeteredJob.sol';
+import {Keep3rJob, IKeep3rV2} from './Keep3rJob.sol';
+import {IKeep3rHelper} from 'interfaces/external/IKeep3rHelper.sol';
+import {IKeep3rMeteredJob} from 'interfaces/utils/IKeep3rMeteredJob.sol';
 
 abstract contract Keep3rMeteredJob is IKeep3rMeteredJob, Keep3rJob {
   /// @inheritdoc IKeep3rMeteredJob

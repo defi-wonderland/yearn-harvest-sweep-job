@@ -2,6 +2,12 @@
 pragma solidity >=0.8.4 <0.9.0;
 
 interface IKeep3rV1Proxy {
+  // Errors
+  error Cooldown();
+  error NoDrawableAmount();
+  error ZeroAddress();
+  error OnlyMinter();
+
   // Structs
   struct Recipient {
     address recipient;
@@ -9,23 +15,17 @@ interface IKeep3rV1Proxy {
   }
 
   // Variables
-  function keep3rV1() external view returns (address);
+  function keep3rV1() external view returns (address _keep3rV1);
 
-  function minter() external view returns (address);
+  function minter() external view returns (address _minter);
 
-  function next(address) external view returns (uint256);
+  function next(address) external view returns (uint256 _next);
 
-  function caps(address) external view returns (uint256);
+  function caps(address) external view returns (uint256 _caps);
 
-  function recipients() external view returns (address[] memory);
+  function recipients() external view returns (address[] memory _recipients);
 
-  function recipientsCaps() external view returns (Recipient[] memory);
-
-  // Errors
-  error Cooldown();
-  error NoDrawableAmount();
-  error ZeroAddress();
-  error OnlyMinter();
+  function recipientsCaps() external view returns (Recipient[] memory _recipientsCaps);
 
   // Methods
   function addRecipient(address _recipient, uint256 _amount) external;

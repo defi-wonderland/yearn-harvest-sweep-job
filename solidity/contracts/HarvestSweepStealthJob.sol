@@ -15,11 +15,11 @@ https://defi.sucks*/
 
 pragma solidity >=0.8.9 <0.9.0;
 
-import './V2KeeperJobPacked.sol';
-import './utils/Pausable.sol';
-import './utils/Keep3rMeteredStealthJob.sol';
-import 'interfaces/IV2Keep3rCreditWindow.sol';
-import 'interfaces/IV2Keep3rStealthJob.sol';
+import {V2KeeperJobPacked, StrategiesPackedSet, IV2KeeperJob, IBaseStrategy} from './V2KeeperJobPacked.sol';
+import {Pausable} from './utils/Pausable.sol';
+import {Keep3rMeteredStealthJob, IKeep3rV2, IStealthRelayer, IKeep3rHelper} from './utils/Keep3rMeteredStealthJob.sol';
+import {IV2Keep3rCreditWindow} from 'interfaces/IV2Keep3rCreditWindow.sol';
+import {IV2Keep3rStealthJob} from 'interfaces/IV2Keep3rStealthJob.sol';
 
 contract HarvestSweepStealthJob is
   IV2Keep3rCreditWindow,
@@ -157,7 +157,7 @@ contract HarvestSweepStealthJob is
     v2Keeper.harvest(_strategy);
   }
 
-  function _isWorkableDuringWindow(address _strategy) internal view returns (bool) {
+  function _isWorkableDuringWindow(address _strategy) internal view returns (bool _isWorkable) {
     uint256 _rewardedAt = IKeep3rV2(keep3r).rewardedAt(address(this));
     uint256 _rewardPeriodTime = IKeep3rV2(keep3r).rewardPeriodTime();
     uint256 _nextPeriodStart = _rewardedAt + _rewardPeriodTime;

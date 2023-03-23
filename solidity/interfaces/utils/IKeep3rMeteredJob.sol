@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4 <0.9.0;
 
-import './IKeep3rJob.sol';
+import {IKeep3rJob} from './IKeep3rJob.sol';
 
 interface IKeep3rMeteredJob is IKeep3rJob {
   // events
@@ -45,7 +45,7 @@ interface IKeep3rMeteredJob is IKeep3rJob {
   /// @return _maxMultiplier Maximum acceptable gasMultiplier to be set
   function maxMultiplier() external view returns (uint256 _maxMultiplier);
 
-  // solhint-disable-next-line func-name-mixedcase, var-name-mixedcase
+  // solhint-disable-next-line func-name-mixedcase, defi-wonderland/wonder-var-name-mixedcase
   function BASE() external view returns (uint32 _BASE);
 
   // methods

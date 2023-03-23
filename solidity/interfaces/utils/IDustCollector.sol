@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4 <0.9.0;
 
-import './IGovernable.sol';
+import {IGovernable} from './IGovernable.sol';
 
 interface IDustCollector is IGovernable {
   /// @notice Emitted when dust is sent

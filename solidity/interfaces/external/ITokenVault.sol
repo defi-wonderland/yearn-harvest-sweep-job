@@ -29,10 +29,10 @@ interface ITokenVault {
     address _management
   ) external;
 
-  function apiVersion() external pure returns (string memory);
+  function apiVersion() external pure returns (string memory _version);
 
   // solhint-disable-next-line func-name-mixedcase
-  function DOMAIN_SEPARATOR() external view returns (bytes32);
+  function DOMAIN_SEPARATOR() external view returns (bytes32 _domainSeparator);
 
   function setName(string memory _name) external;
 
@@ -60,15 +60,15 @@ interface ITokenVault {
 
   function setWithdrawalQueue(address[20] memory _queue) external;
 
-  function transfer(address _receiver, uint256 _amount) external returns (bool);
+  function transfer(address _receiver, uint256 _amount) external returns (bool _success);
 
-  function transferFrom(address _sender, address _receiver, uint256 _amount) external returns (bool);
+  function transferFrom(address _sender, address _receiver, uint256 _amount) external returns (bool _success);
 
-  function approve(address _spender, uint256 _amount) external returns (bool);
+  function approve(address _spender, uint256 _amount) external returns (bool _success);
 
-  function increaseAllowance(address _spender, uint256 _amount) external returns (bool);
+  function increaseAllowance(address _spender, uint256 _amount) external returns (bool _success);
 
-  function decreaseAllowance(address _spender, uint256 _amount) external returns (bool);
+  function decreaseAllowance(address _spender, uint256 _amount) external returns (bool _success);
 
   function permit(
     address _owner,
@@ -76,27 +76,27 @@ interface ITokenVault {
     uint256 _amount,
     uint256 _expiry,
     bytes memory _signature
-  ) external returns (bool);
+  ) external returns (bool _success);
 
-  function totalAssets() external view returns (uint256);
+  function totalAssets() external view returns (uint256 _totalAssets);
 
-  function deposit() external returns (uint256);
+  function deposit() external returns (uint256 _deposit);
 
-  function deposit(uint256 _amount) external returns (uint256);
+  function deposit(uint256 _amount) external returns (uint256 _deposit);
 
-  function deposit(uint256 _amount, address _recipient) external returns (uint256);
+  function deposit(uint256 _amount, address _recipient) external returns (uint256 _deposit);
 
-  function maxAvailableShares() external view returns (uint256);
+  function maxAvailableShares() external view returns (uint256 _maxShares);
 
-  function withdraw() external returns (uint256);
+  function withdraw() external returns (uint256 _amount);
 
-  function withdraw(uint256 _maxShares) external returns (uint256);
+  function withdraw(uint256 _maxShares) external returns (uint256 _amount);
 
-  function withdraw(uint256 _maxShares, address _recipient) external returns (uint256);
+  function withdraw(uint256 _maxShares, address _recipient) external returns (uint256 _amount);
 
-  function withdraw(uint256 _maxShares, address _recipient, uint256 _maxLoss) external returns (uint256);
+  function withdraw(uint256 _maxShares, address _recipient, uint256 _maxLoss) external returns (uint256 _amount);
 
-  function pricePerShare() external view returns (uint256);
+  function pricePerShare() external view returns (uint256 _price);
 
   function addStrategy(
     address _strategy,
@@ -124,75 +124,75 @@ interface ITokenVault {
 
   function removeStrategyFromQueue(address _strategy) external;
 
-  function debtOutstanding() external view returns (uint256);
+  function debtOutstanding() external view returns (uint256 _amount);
 
-  function debtOutstanding(address _strategy) external view returns (uint256);
+  function debtOutstanding(address _strategy) external view returns (uint256 _amount);
 
-  function creditAvailable() external view returns (uint256);
+  function creditAvailable() external view returns (uint256 _amount);
 
-  function creditAvailable(address _strategy) external view returns (uint256);
+  function creditAvailable(address _strategy) external view returns (uint256 _amount);
 
-  function availableDepositLimit() external view returns (uint256);
+  function availableDepositLimit() external view returns (uint256 _amount);
 
-  function expectedReturn() external view returns (uint256);
+  function expectedReturn() external view returns (uint256 _amount);
 
-  function expectedReturn(address _strategy) external view returns (uint256);
+  function expectedReturn(address _strategy) external view returns (uint256 _amount);
 
-  function report(uint256 _gain, uint256 _loss, uint256 _debtPayment) external returns (uint256);
+  function report(uint256 _gain, uint256 _loss, uint256 _debtPayment) external returns (uint256 _amount);
 
   function sweep(address _token) external;
 
   function sweep(address _token, uint256 _amount) external;
 
-  function name() external view returns (string memory);
+  function name() external view returns (string memory _name);
 
-  function symbol() external view returns (string memory);
+  function symbol() external view returns (string memory _symbol);
 
-  function decimals() external view returns (uint256);
+  function decimals() external view returns (uint256 _decimals);
 
-  function balanceOf(address _arg0) external view returns (uint256);
+  function balanceOf(address _arg0) external view returns (uint256 _balance);
 
-  function allowance(address _arg0, address _arg1) external view returns (uint256);
+  function allowance(address _arg0, address _arg1) external view returns (uint256 _amount);
 
-  function totalSupply() external view returns (uint256);
+  function totalSupply() external view returns (uint256 _totalSupply);
 
-  function token() external view returns (address);
+  function token() external view returns (address _address);
 
-  function governance() external view returns (address);
+  function governance() external view returns (address _governance);
 
-  function management() external view returns (address);
+  function management() external view returns (address _management);
 
-  function guardian() external view returns (address);
+  function guardian() external view returns (address _guardian);
 
-  function strategies(address _arg0) external view returns (StrategyParams memory);
+  function strategies(address _arg0) external view returns (StrategyParams memory _params);
 
-  function withdrawalQueue(uint256 _arg0) external view returns (address);
+  function withdrawalQueue(uint256 _arg0) external view returns (address _address);
 
-  function emergencyShutdown() external view returns (bool);
+  function emergencyShutdown() external view returns (bool _emergencyShutdown);
 
-  function depositLimit() external view returns (uint256);
+  function depositLimit() external view returns (uint256 _amount);
 
-  function debtRatio() external view returns (uint256);
+  function debtRatio() external view returns (uint256 _amount);
 
-  function totalIdle() external view returns (uint256);
+  function totalIdle() external view returns (uint256 _amount);
 
-  function totalDebt() external view returns (uint256);
+  function totalDebt() external view returns (uint256 _amount);
 
-  function lastReport() external view returns (uint256);
+  function lastReport() external view returns (uint256 _timestamp);
 
-  function activation() external view returns (uint256);
+  function activation() external view returns (uint256 _timestamp);
 
-  function lockedProfit() external view returns (uint256);
+  function lockedProfit() external view returns (uint256 _amount);
 
-  function lockedProfitDegradation() external view returns (uint256);
+  function lockedProfitDegradation() external view returns (uint256 _amount);
 
-  function rewards() external view returns (address);
+  function rewards() external view returns (address _rewards);
 
-  function managementFee() external view returns (uint256);
+  function managementFee() external view returns (uint256 _amount);
 
-  function performanceFee() external view returns (uint256);
+  function performanceFee() external view returns (uint256 _amount);
 
-  function nonces(address _arg0) external view returns (uint256);
+  function nonces(address _arg0) external view returns (uint256 _nonce);
 }
 
 struct StrategyParams {

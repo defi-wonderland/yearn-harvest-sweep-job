@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.9 <0.9.0;
 
-import './Governable.sol';
-import 'interfaces/utils/IPausable.sol';
+import {Governable} from './Governable.sol';
+import {IPausable} from 'interfaces/utils/IPausable.sol';
 
 abstract contract Pausable is IPausable, Governable {
   /// @inheritdoc IPausable

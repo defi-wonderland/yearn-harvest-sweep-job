@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.9 <0.9.0;
 
-import '@yearn-mechanics/contract-utils/solidity/contracts/utils/Machinery.sol';
-import './Governable.sol';
+import {Machinery} from '@yearn-mechanics/contract-utils/solidity/contracts/utils/Machinery.sol';
+import {Governable} from './Governable.sol';
 
 abstract contract MachineryReady is Machinery, Governable {
   // errors
