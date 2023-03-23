@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4 <0.9.0;
 
+// ignore: defi-wonderland/import-statement-format
 import 'test/utils/keeper_constants.sol';
 
 import {HarvestSweepStealthJob} from 'contracts/HarvestSweepStealthJob.sol';
@@ -23,7 +24,8 @@ import {Test} from 'forge-std/Test.sol';
  *     callData: '0x36df7ea50000000000000000000000007c85c0a8e2a45eeff98a10b6037f70daf714b7cf',
  *     txHash: '0x5026697c0516aabb8f9790669fa983015aa1169dc8c9bb6c478f9e7d168b8855',
  */
-contract HarvestSweepStealthJob_E2E is Test {
+contract E2EHarvestSweepStealthJob is Test {
+  // Events to test:
   event KeeperWorked(address _strategy);
   event Harvested(uint256 _profit, uint256 _loss, uint256 _debtPayment, uint256 _debtOutstanding);
 
@@ -45,6 +47,8 @@ contract HarvestSweepStealthJob_E2E is Test {
 
   function setUp() public {
     vm.createSelectFork(vm.rpcUrl('mainnet'), _FORK_BLOCK);
+
+    // Gib ETH
     deal(proxyGovernor, 1000 ether);
     deal(v2KeeperGovernor, 1000 ether);
     deal(address(keeper), 1000 ether);
@@ -67,6 +71,7 @@ contract HarvestSweepStealthJob_E2E is Test {
       ONLY_EOA
     );
 
+    // Set the scene: add the job to the keepers, bond the keeper, activate the keeper
     vm.prank(proxyGovernor);
     keep3rV2.setBondTime(0);
 
@@ -129,6 +134,9 @@ contract HarvestSweepStealthJob_E2E is Test {
     // Adding the 21k of a normal tx from an EOA
     _gasUsed = _gasUsed - gasleft();
 
+    // ------------------------------------
+    // TS test: expected reward is x120/100 ?
+
     // Check: Received correct reward?
     uint256 _expectedReward = _getExpectedReward(_gasUsed);
     assertApproxEqAbs(keep3rV2.workCompleted(keeper) - _previousWorkCompleted, _expectedReward, 0.015 ether); // 0.015KPR
@@ -144,7 +152,7 @@ contract HarvestSweepStealthJob_E2E is Test {
    */
   function testShouldBeWorkableWhenInCreditWindow() external {}
 
-  function _getExpectedReward(uint256 _gasUsed) internal returns (uint256 expectedReward) {
+  function _getExpectedReward(uint256 _gasUsed) internal view returns (uint256 expectedReward) {
     // Get the twap
     uint32 _twapTime = 600;
     (int24 meanTick,) = OracleLibrary.consult(KP3R_WETH_V3_POOL_ADDRESS, _twapTime);
