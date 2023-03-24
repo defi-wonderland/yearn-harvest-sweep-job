@@ -110,7 +110,9 @@ contract HarvestSweepStealthJob is
 
     // If we are in the credit optimisation window and we worked an old strategy, ensure we dont use liquidity credits
     // (this would reset the rewardedAt)
-    if (_sweepOldOnes == 1 && IKeep3rV2(keep3r).rewardedAt(address(this)) == block.timestamp) revert ExtraCreditUsed();
+    if (_sweepOldOnes == 1 && IKeep3rV2(keep3r).rewardedAt(address(this)) == block.timestamp) {
+      revert ExtraCreditUsed();
+    }
   }
 
   /// @inheritdoc IV2KeeperJob
