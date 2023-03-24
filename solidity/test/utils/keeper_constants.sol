@@ -7,9 +7,9 @@ pragma solidity >=0.8.4 <0.9.0;
 
 uint256 constant HARVEST_COOLDOWN = 21_600;
 uint256 constant TEND_COOLDOWN    = 300;
-uint256 constant ONE              = 1_000_000_000_000_000_000;
-uint256 constant MIN_BOND         = 50_000_000_000_000_000_000;
-uint256 constant MAX_BOND         = 200_000_000_000_000_000_000;
+uint256 constant ONE              = 1 ether;
+uint256 constant MIN_BOND         = 50 ether;
+uint256 constant MAX_BOND         = 200 ether;
 uint256 constant EARNED           = 0;
 uint256 constant AGE              = 0;
 bool    constant ONLY_EOA         = true;

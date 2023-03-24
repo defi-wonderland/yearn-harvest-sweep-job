@@ -14,6 +14,8 @@ pragma solidity ^0.8.0;
  *          enumerable set implementation.
  */
 library StrategiesPackedSet {
+  error StrategiesPackedSet_Overflow();
+
   struct Set {
     // Storage of _set values
     bytes32[] values;
@@ -29,11 +31,13 @@ library StrategiesPackedSet {
    * already present.
    */
   function add(Set storage _set, address _strategy, uint256 _requiredAmount) internal returns (bool _success) {
+    if (_requiredAmount >= type(uint48).max) revert StrategiesPackedSet_Overflow();
+
     if (!contains(_set, _strategy)) {
       bytes32 _value = bytes32(
         uint256(uint160(_strategy)) // 160 bits
           // 48 bits skipped for the lastWorkAt (init at 0)
-          | (uint256(_requiredAmount) << 208) // 48 bits - no mask as it's the last 48 bits
+          | (uint256(_requiredAmount) << 208) // 48 bits
       );
 
       _set.values.push(_value);
@@ -86,6 +90,9 @@ library StrategiesPackedSet {
    *      Bit mask hardcoded for gas cost.
    */
   function setLastWorkAt(Set storage _set, address _strategy, uint256 _timestamp) internal {
+    // Sanity check: are we overflowing (unlikely if timestamp are correctly used, we don't assume that)
+    if (_timestamp >= type(uint48).max) revert StrategiesPackedSet_Overflow();
+
     uint256 _valueIndex = _set.indexes[_strategy];
 
     bytes32 _elementToUpdate = _set.values[_valueIndex - 1];
@@ -106,6 +113,9 @@ library StrategiesPackedSet {
    *      Bit mask hardcoded for gas cost.
    */
   function setRequiredAmount(Set storage _set, address _strategy, uint256 _requiredAmount) internal {
+    // Sanity check: are we overflowing?
+    if (_requiredAmount >= type(uint48).max) revert StrategiesPackedSet_Overflow();
+
     uint256 _valueIndex = _set.indexes[_strategy];
 
     bytes32 _elementToUpdate = _set.values[_valueIndex - 1];
