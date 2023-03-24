@@ -113,7 +113,6 @@ abstract contract V2KeeperJobPacked is IV2KeeperJob, MachineryReady, GasBaseFee 
   }
 
   function _setWorkCooldown(uint256 _workCooldown) internal {
-    if (_workCooldown == 0) revert ZeroCooldown();
     workCooldown = _workCooldown;
 
     emit WorkCooldownSet(_workCooldown);
