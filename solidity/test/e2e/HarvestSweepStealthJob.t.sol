@@ -29,20 +29,18 @@ contract E2EHarvestSweepStealthJob is Test {
   event KeeperWorked(address _strategy);
   event Harvested(uint256 _profit, uint256 _loss, uint256 _debtPayment, uint256 _debtOutstanding);
 
-  // forgefmt:disable-start
-  uint256         public constant FORK_BLOCK       = 15_514_011;
+  uint256 public constant FORK_BLOCK = 15_514_011;
 
-  address         public constant STRATEGY         = 0x7C85c0a8E2a45EefF98A10b6037f70daf714B7cf;
-  address         public constant proxyGovernor    = KP3R_V1_PROXY_GOVERNANCE_ADDRESS;
-  address         public constant v2KeeperGovernor = V2_KEEPER_GOVERNOR;
-  
-  IKeep3rV2       public constant keep3rV2         = IKeep3rV2(KEEP3R_V2);
-  IV2Keeper       public constant v2Keeper         = IV2Keeper(V2_KEEPER);
-  IStealthRelayer public constant stealthRelayer   = IStealthRelayer(STEALTH_RELAYER);
-  IStealthVault   public constant stealthVault     = IStealthVault(STEALTH_VAULT);
-  IERC20          public constant kprToken         = IERC20(KP3R_V1_ADDRESS);
-  IBaseStrategy   public constant strategy         = IBaseStrategy(STRATEGY);
-  // forgefmt:disable-end
+  address public constant STRATEGY = 0x7C85c0a8E2a45EefF98A10b6037f70daf714B7cf;
+  address public constant proxyGovernor = KP3R_V1_PROXY_GOVERNANCE_ADDRESS;
+  address public constant v2KeeperGovernor = V2_KEEPER_GOVERNOR;
+
+  IKeep3rV2 public constant keep3rV2 = IKeep3rV2(KEEP3R_V2);
+  IV2Keeper public constant v2Keeper = IV2Keeper(V2_KEEPER);
+  IStealthRelayer public constant stealthRelayer = IStealthRelayer(STEALTH_RELAYER);
+  IStealthVault public constant stealthVault = IStealthVault(STEALTH_VAULT);
+  IERC20 public constant kprToken = IERC20(KP3R_V1_ADDRESS);
+  IBaseStrategy public constant strategy = IBaseStrategy(STRATEGY);
 
   address public keeper = makeAddr('keeper');
   HarvestSweepStealthJob public job;
