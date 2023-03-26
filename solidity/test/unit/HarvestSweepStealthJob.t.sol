@@ -2,7 +2,14 @@
 pragma solidity >=0.8.4 <0.9.0;
 
 import {HarvestSweepStealthJobForTest} from 'test/unit/ForTest/HarvestSweepStealthJobForTest.sol';
-import {IV2KeeperJob} from 'interfaces/IV2KeeperJob.sol';
+import {
+  Keep3rMeteredStealthJob,
+  IKeep3rV2,
+  IStealthRelayer,
+  IKeep3rHelper
+} from 'contracts/utils/Keep3rMeteredStealthJob.sol';
+
+import {IV2KeeperJob, IBaseStrategy} from 'contracts/V2KeeperJobPacked.sol';
 import {IBaseErrors} from 'interfaces/utils/IBaseErrors.sol';
 
 import {StrategiesPackedSet} from 'contracts/utils/StrategiesPackedSet.sol';
@@ -45,6 +52,7 @@ contract HarvestSweepStealthJobTest is Test {
   //////////////////////////////////////////////////////////////*/
 
   function setUp() public {
+    vm.etch(strategy, hex'69');
     vm.etch(v2Keeper, hex'69');
     vm.etch(mechanicsRegistry, hex'69');
     vm.etch(stealthRelayer, hex'69');
@@ -152,10 +160,48 @@ contract HarvestSweepStealthJobTest is Test {
     assertEq(harvestJob.workable(strategy), false);
   }
 
-  function test_workable_revertIfStrategyNotAdded() external {}
+  function test_workable_revertIfStrategyNotAdded(address _nonExistingStrategy) external {
+    vm.assume(_nonExistingStrategy != strategy);
+    vm.expectRevert(abi.encodeWithSelector(IV2KeeperJob.StrategyNotAdded.selector));
+    harvestJob.workable(_nonExistingStrategy);
+  }
 
   // Outside cooldown:
-  function test_workable_shouldReturnStrategyResponseIfNotInSweep() external {}
+  function test_workable_shouldReturnStrategyResponseIfNotInSweep(bool _strategyStatus) external {
+    harvestJob.internalSetLastWorkAt(strategy, block.timestamp - COOLDOWN - 1);
+
+    vm.mockCall(
+      keep3r, abi.encodeWithSelector(IKeep3rV2.rewardedAt.selector), abi.encode(block.timestamp - COOLDOWN - 10)
+    );
+    vm.mockCall(keep3r, abi.encodeWithSelector(IKeep3rV2.rewardPeriodTime.selector), abi.encode(604_800));
+
+    vm.prank(governor);
+    harvestJob.setCreditWindow(3600);
+
+    vm.mockCall(strategy, abi.encodeWithSelector(IBaseStrategy.harvestTrigger.selector), abi.encode(_strategyStatus));
+
+    assertEq(harvestJob.workable(strategy), _strategyStatus);
+  }
+
+  /**
+   * callcost(requiredAmount * gasPrice)
+   */
+  function test_workable_shouldCallHarvestTriggerWithCorrectParam(bool _strategyStatus) external {
+    harvestJob.internalSetLastWorkAt(strategy, block.timestamp - COOLDOWN - 1);
+
+    vm.mockCall(
+      keep3r, abi.encodeWithSelector(IKeep3rV2.rewardedAt.selector), abi.encode(block.timestamp - COOLDOWN - 10)
+    );
+    vm.mockCall(keep3r, abi.encodeWithSelector(IKeep3rV2.rewardPeriodTime.selector), abi.encode(604_800));
+
+    vm.prank(governor);
+    harvestJob.setCreditWindow(3600);
+
+    vm.mockCall(strategy, abi.encodeWithSelector(IBaseStrategy.harvestTrigger.selector), abi.encode(_strategyStatus));
+
+    assertEq(harvestJob.workable(strategy), _strategyStatus);
+  }
+
   function test_workable_shouldReturnTrueIfHarvestTriggerFalseButSweepable() external {}
   function test_workable_shouldReturnFalseIfTriggerFalseAndSweepableFalse() external {}
 
