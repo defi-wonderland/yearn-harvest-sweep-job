@@ -37,9 +37,7 @@
     "*.sol": "cross-env solhint --fix 'solidity/**/*.sol",
     "package.json": "sort-package-json"
   },
-  "dependencies": {
-    "@uniswap/v3-periphery": "https://github.com/Uniswap/v3-periphery#0.8"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@commitlint/cli": "17.0.3",
     "@commitlint/config-conventional": "17.0.3",
