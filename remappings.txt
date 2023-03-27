@@ -4,6 +4,7 @@ forge-std/=lib/forge-std/src
 isolmate/=lib/isolmate/src
 @yearn-mechanics/contract-utils=lib/contract-utils
 @openzeppelin/=lib/openzeppelin-contracts/
+@uniswap/=node_modules/@uniswap/
 
 contracts/=solidity/contracts
 interfaces/=solidity/interfaces
