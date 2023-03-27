@@ -37,6 +37,7 @@ contract HarvestSweepStealthJobTest is Test {
   event Keep3rRequirementsSet(address _bond, uint256 _minBond, uint256 _earned, uint256 _age);
   event OnlyEOASet(bool _onlyEOA);
   event ForceWorked(address _strategy);
+  event SweepingOldStrategy(address indexed _strategy);
 
   /*///////////////////////////////////////////////////////////////
                         Global test parameters                  
@@ -63,6 +64,10 @@ contract HarvestSweepStealthJobTest is Test {
   //////////////////////////////////////////////////////////////*/
 
   function setUp() public {
+    // Avoid 0 default timestamp and block number
+    vm.warp(1_679_861_835);
+    vm.roll(16_913_921);
+
     vm.etch(strategy, hex'69');
     vm.etch(v2Keeper, hex'69');
     vm.etch(mechanicsRegistry, hex'69');
@@ -385,6 +390,9 @@ contract HarvestSweepStealthJobTest is Test {
     // Check: emit event?
     vm.expectEmit(true, true, true, true);
     emit KeeperWorked(strategy);
+
+    vm.expectEmit(true, true, true, true);
+    emit SweepingOldStrategy(strategy);
 
     vm.prank(stealthRelayer);
     harvestJob.work(strategy);

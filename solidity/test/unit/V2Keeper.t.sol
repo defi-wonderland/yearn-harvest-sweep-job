@@ -41,6 +41,10 @@ contract UnitV2Test is Test {
   //////////////////////////////////////////////////////////////*/
 
   function setUp() public {
+    // Avoid 0 default timestamp and block number
+    vm.warp(1_679_861_835);
+    vm.roll(16_913_921);
+
     vm.etch(v2Keeper, hex'69');
     vm.etch(mechanicsRegistry, hex'69');
     vm.etch(strategy, hex'69');
@@ -51,9 +55,6 @@ contract UnitV2Test is Test {
                 _v2Keeper: v2Keeper,
                 _workCooldown: COOLDOWN
         });
-
-    // Set a timestamp for time-dependant test (avoid weird underflow when block.timestamp=0)
-    vm.warp(123_456_789);
   }
 
   /*///////////////////////////////////////////////////////////////

@@ -25,11 +25,18 @@ import {Test} from 'forge-std/Test.sol';
  *     txHash: '0x5026697c0516aabb8f9790669fa983015aa1169dc8c9bb6c478f9e7d168b8855',
  */
 contract E2EHarvestSweepStealthJob is Test {
-  // Events to test:
+  /*///////////////////////////////////////////////////////////////
+                        Events tested                  
+  //////////////////////////////////////////////////////////////*/
   event KeeperWorked(address _strategy);
   event Harvested(uint256 _profit, uint256 _loss, uint256 _debtPayment, uint256 _debtOutstanding);
+  event SweepingOldStrategy(address indexed _strategy);
 
-  uint256 public constant FORK_BLOCK = 15_514_011;
+  /*///////////////////////////////////////////////////////////////
+                        Global test parameters                  
+  //////////////////////////////////////////////////////////////*/
+
+  uint256 public constant FORK_BLOCK_NUMBER = 15_514_011;
 
   address public constant STRATEGY = 0x7C85c0a8E2a45EefF98A10b6037f70daf714B7cf;
   address public constant proxyGovernor = KP3R_V1_PROXY_GOVERNANCE_ADDRESS;
@@ -45,8 +52,15 @@ contract E2EHarvestSweepStealthJob is Test {
   address public keeper = makeAddr('keeper');
   HarvestSweepStealthJob public job;
 
+  /*///////////////////////////////////////////////////////////////
+          setup: fork mainnet, deploy and activate keeper
+  //////////////////////////////////////////////////////////////*/
+
   function setUp() public {
-    vm.createSelectFork(vm.rpcUrl('mainnet'), FORK_BLOCK);
+    vm.createSelectFork(vm.rpcUrl('mainnet'), FORK_BLOCK_NUMBER);
+
+    // Set block.basefee to 50 gwei
+    vm.fee(50 * 10 ** 9);
 
     // Gib ETH
     deal(proxyGovernor, 1000 ether);
@@ -95,20 +109,22 @@ contract E2EHarvestSweepStealthJob is Test {
     vm.prank(proxyGovernor);
     keep3rV2.forceLiquidityCreditsToJob(address(job), 10 ether);
 
-    vm.prank(v2KeeperGovernor);
-    job.addStrategy(STRATEGY, 0);
-
     deal(address(job), 1000 ether);
     vm.prank(address(job));
     keep3rV2.bondedPayment(keeper, 420);
   }
 
+  /*///////////////////////////////////////////////////////////////
+                              work()
+  //////////////////////////////////////////////////////////////*/
+
   /**
    * @notice Test if a strategy which is profitable is workable
    */
   function testShouldBeWorkableWhenProfitable() external {
-    // Set block.basefee to 50 gwei
-    vm.fee(50 * 10 ** 9);
+    // Add the strategy with a required amount low enough to be profitable
+    vm.prank(v2KeeperGovernor);
+    job.addStrategy(STRATEGY, 10_000);
 
     // Keep track of the work completed previously
     uint256 _previousWorkCompleted = keep3rV2.workCompleted(keeper);
@@ -132,7 +148,7 @@ contract E2EHarvestSweepStealthJob is Test {
     );
 
     // Adding the 21k of a normal tx from an EOA
-    _gasUsed = _gasUsed - gasleft();
+    _gasUsed = _gasUsed - gasleft() + 21_000;
 
     // ------------------------------------
     // TS test: expected reward is x120/100 ?
@@ -164,14 +180,55 @@ contract E2EHarvestSweepStealthJob is Test {
   }
 
   /**
+   * @notice Test if a strategy which is not profitable and when in the credit window is workable
+   */
+  function testShouldBeWorkableWhenInCreditWindow() external {
+    // Add the strategy with a required amount high enough to be non-profitable
+    // Using the same fork, so we know this strategy would have been worked if profitable
+    vm.prank(v2KeeperGovernor);
+    job.addStrategy(STRATEGY, 100_000);
+
+    (uint128 _sweepingPeriodStart, uint128 _creditWindow) = job.sweepingParams();
+
+    uint256 _lastReward = keep3rV2.rewardedAt(address(job));
+    uint256 _rewardPeriodTime = keep3rV2.rewardPeriodTime();
+    uint256 _nextPeriodStartAt = _lastReward + _rewardPeriodTime;
+
+    uint256 _previousWorkCompleted = keep3rV2.workCompleted(keeper);
+
+    // Warp at the end of a credit window in a few cycles, to make this strategy sweepable
+    vm.warp(_nextPeriodStartAt + _rewardPeriodTime - 1);
+
+    // Force some more credit to counter-act the decay?
+    vm.prank(KP3R_V1_PROXY_GOVERNANCE_ADDRESS);
+    keep3rV2.forceLiquidityCreditsToJob(address(job), 1 ether);
+
+    // // Check: Correct events emitted?
+    // vm.expectEmit(true, true, true, true, address(STRATEGY));
+    // emit Harvested(0, 1, 0, 0);
+
+    // vm.expectEmit(true, true, true, true, address(job));
+    // emit KeeperWorked(STRATEGY);
+
+    // vm.expectEmit(true, true, true, true);
+    // emit SweepingOldStrategy(STRATEGY);
+
+    // Prank both msg.sender and tx.origin
+    vm.prank(keeper, keeper);
+
+    // Track the gas consumption
+    uint256 _gasUsed = gasleft();
+
+    // // Work the job
+    // stealthRelayer.executeAndPay(
+    //   address(job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
+    // );
+  }
+
+  /**
    * @notice Test if a strategy which is not profitable and when not in the credit window is not workable
    */
   function testShouldBeNonWorkableWhenOutsideCreditWindow() external {}
-
-  /**
-   * @notice Test if a strategy which is not profitable and when in the credit window is workable
-   */
-  function testShouldBeWorkableWhenInCreditWindow() external {}
 
   function _getExpectedReward(uint256 _gasUsed) internal view returns (uint256 _expectedReward) {
     // Get the twap

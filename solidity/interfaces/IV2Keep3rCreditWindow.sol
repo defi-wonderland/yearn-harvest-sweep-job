@@ -8,6 +8,9 @@ interface IV2Keep3rCreditWindow {
   /// @notice Event emitted when the sweeping start is modified
   event SweepingStartModified(uint256 _sweepingPeriodStart);
 
+  /// @notice Event emitted when sweeping a strategy
+  event SweepingOldStrategy(address indexed _strategy);
+
   /// @notice Throw when liquidity credit is used during the credit optimisation window
   error ExtraCreditUsed();
 

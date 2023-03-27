@@ -107,6 +107,7 @@ contract HarvestSweepStealthJob is
 
     emit KeeperWorked(_strategy);
     emit GasMetered(_initialGas, _gasAfterWork, gasBonus);
+    if (_sweepOldOnes == 1) emit SweepingOldStrategy(_strategy);
 
     // If we are in the credit optimisation window and we worked an old strategy, ensure we dont use liquidity credits
     // (this would reset the rewardedAt)
