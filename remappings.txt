@@ -3,7 +3,7 @@ prb/test/=lib/prb-test/src/
 forge-std/=lib/forge-std/src
 isolmate/=lib/isolmate/src
 @yearn-mechanics/contract-utils=lib/contract-utils
-@openzeppelin/=node_modules/@openzeppelin/
+@openzeppelin/=lib/openzeppelin-contracts/
 
 contracts/=solidity/contracts
 interfaces/=solidity/interfaces
