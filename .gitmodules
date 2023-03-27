@@ -14,3 +14,6 @@
 	path = lib/isolmate
 	url = https://github.com/defi-wonderland/isolmate
 	branch = main
+[submodule "lib/contract-utils"]
+	path = lib/contract-utils
+	url = https://github.com/yearn/contract-utils

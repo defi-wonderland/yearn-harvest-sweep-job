@@ -48,7 +48,7 @@ jobs:
           version: nightly
 
       - name: Install forge dependencies
-        run: forge install & yarn install
+        run: forge install
 
       - name: Precompile using 0.8.14 and via-ir=false
         run: yarn build
@@ -78,7 +78,7 @@ jobs:
           version: nightly
 
       - name: Install forge dependencies
-        run: forge install & yarn install
+        run: forge install
 
       - name: Precompile using 0.8.14 and via-ir=true
         run: yarn build:optimized
