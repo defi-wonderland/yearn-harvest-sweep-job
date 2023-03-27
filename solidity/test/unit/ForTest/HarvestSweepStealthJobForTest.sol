@@ -42,6 +42,10 @@ contract HarvestSweepStealthJobForTest is HarvestSweepStealthJob {
     return _baseFee;
   }
 
+  function internalSetBaseFee(uint256 _fee) external {
+    _baseFee = _fee;
+  }
+
   function internalSetLastWorkAt(address _strategy, uint256 _timestamp) external {
     StrategiesPackedSet.setLastWorkAt(_availableStrategies, _strategy, _timestamp);
   }
