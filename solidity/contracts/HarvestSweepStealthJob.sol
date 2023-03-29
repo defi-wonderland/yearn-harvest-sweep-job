@@ -162,11 +162,16 @@ contract HarvestSweepStealthJob is
 
   function _isWorkableDuringWindow(address _strategy) internal view returns (bool _isWorkable) {
     uint256 _rewardedAt = IKeep3rV2(keep3r).rewardedAt(address(this));
-    uint256 _rewardPeriodTime = IKeep3rV2(keep3r).rewardPeriodTime();
-    uint256 _nextPeriodStart = _rewardedAt + _rewardPeriodTime;
 
     // Is this a new job? If so, we can't use liquidity credits
     if (_rewardedAt == 0) return false;
+
+    uint256 _rewardPeriodTime = IKeep3rV2(keep3r).rewardPeriodTime();
+
+    // Compute the begining of the period (take into account the job might have not been worked during previous periods)
+    uint256 _periodStart = _rewardedAt + _rewardPeriodTime * ((block.timestamp - _rewardedAt) / _rewardPeriodTime);
+
+    uint256 _nextPeriodStart = _periodStart + _rewardPeriodTime;
 
     // Are we in the credit optimisation window? See for struct sload rationale:
     // https://gist.github.com/drgorillamd/d88f697a9508df0ddb205cbbfc35fe09
@@ -174,8 +179,8 @@ contract HarvestSweepStealthJob is
 
     // Are we in the sweeping period for this strategy? Every strategy last worked before this timestamp is now workable
     // See https://www.desmos.com/calculator/frjfmtr8ng
-    uint256 _currentSweepingPeriodEnd = _rewardedAt
-      - ((_rewardedAt * (_nextPeriodStart - block.timestamp)) / _rewardPeriodTime)
+    uint256 _currentSweepingPeriodEnd = _periodStart
+      - ((_periodStart * (_nextPeriodStart - block.timestamp)) / _rewardPeriodTime)
       + ((sweepingParams.sweepingPeriodStartAt * (_nextPeriodStart - block.timestamp)) / _rewardPeriodTime);
 
     // Return true if the _strategy lastWorkAt was before _currentSweepingPeriodEnd
