@@ -41,6 +41,7 @@ address constant KP3R_V1_ADDRESS = address(0x1cEB5cB57C4D4E2b2433641b95Dd330A331
 address constant KP3R_V1_PROXY_ADDRESS = address(0x976b01c02c636Dd5901444B941442FD70b86dcd5);
 address constant KP3R_V1_PROXY_GOVERNANCE_ADDRESS = address(0x0D5Dc686d0a2ABBfDaFDFb4D0533E886517d4E83);
 address constant KP3R_V1_GOVERNANCE_ADDRESS = address(0xFC48aC750959d5d5aE9A4bb38f548A7CA8763F8d);
+address constant KP3R_LP_TOKEN = address(0x3f6740b5898c5D3650ec6eAce9a649Ac791e44D7);
 
 /*///////////////////////////////////////////////////////////////
                                 Misc                       
