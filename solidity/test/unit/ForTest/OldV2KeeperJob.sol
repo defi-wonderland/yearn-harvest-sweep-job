@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity >=0.8.9 <0.9.0;
 
+// solhint-disable defi-wonderland/import-statement-format
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 
 import 'contracts/utils/GasBaseFee.sol';
@@ -132,7 +132,7 @@ abstract contract OldV2KeeperJob is IV2KeeperJob, MachineryReady, GasBaseFee {
     requiredAmount[_strategy] = _requiredAmount;
   }
 
-  function _workable(address _strategy) internal view virtual returns (bool) {
+  function _workable(address _strategy) internal view virtual returns (bool _workable) {
     if (!_availableStrategies.contains(_strategy)) revert StrategyNotAdded();
     if (workCooldown == 0 || block.timestamp > lastWorkAt[_strategy] + workCooldown) return true;
     return false;

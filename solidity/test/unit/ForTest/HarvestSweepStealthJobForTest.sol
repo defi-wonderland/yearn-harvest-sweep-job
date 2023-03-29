@@ -38,7 +38,7 @@ contract HarvestSweepStealthJobForTest is HarvestSweepStealthJob {
 
   uint256 internal _baseFee;
 
-  function _gasPrice() internal view virtual override returns (uint256) {
+  function _gasPrice() internal view virtual override returns (uint256 _price) {
     return _baseFee;
   }
 
@@ -54,7 +54,7 @@ contract HarvestSweepStealthJobForTest is HarvestSweepStealthJob {
     StrategiesPackedSet.setRequiredAmount(_availableStrategies, _strategy, _requiredAmount);
   }
 
-  function internalHasNotBeenWorkedRecently(address _strategy) external view returns (bool) {
+  function internalHasNotBeenWorkedRecently(address _strategy) external view returns (bool _workable) {
     return _isWorkableDuringWindow(_strategy);
   }
 }

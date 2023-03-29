@@ -221,14 +221,14 @@ contract E2EHarvestSweepStealthJob is Test {
       address(job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
     );
   }
+
   /**
    * @notice Test if a strategy which is not profitable and when in the credit window is workable
-   *         but revert if costing too much
+   *         but revert if costing too much (this is a small spot in this setting as reward credit is huge)
    */
-
   function testRevertIfUsingLiquidityCreditDuringSweeping() external {
-    // Add the strategy, with the same required amount but a 150gwei gas price
-    // Using the same fork, so we know this strategy would have been worked if profitable
+    // Add the strategy with big enough required amount and gas cost to empty the credit (while not consuming
+    // all the liquidity credit as it would revert on inusfficentFund() )
     vm.prank(v2KeeperGovernor);
     job.addStrategy(STRATEGY, 3_000_000);
     vm.fee(350 * 10 ** 9);
