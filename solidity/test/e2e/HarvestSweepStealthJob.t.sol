@@ -228,7 +228,7 @@ contract E2EHarvestSweepStealthJob is Test {
    */
   function testRevertIfUsingLiquidityCreditDuringSweeping() external {
     // Add the strategy with big enough required amount and gas cost to empty the credit (while not consuming
-    // all the liquidity credit as it would revert on inusfficentFund() )
+    // all the liquidity credit as it would revert on insufficentFund() )
     vm.prank(v2KeeperGovernor);
     job.addStrategy(STRATEGY, 3_000_000);
     vm.fee(350 * 10 ** 9);
