@@ -202,7 +202,7 @@ contract HarvestSweepStealthJobTest is Test {
     // Last work was (cooldown + 1) seconds ago
     harvestJob.internalSetLastWorkAt(strategy, block.timestamp - COOLDOWN - 1);
 
-    // Begining of the reward cycle was at that same timestamp
+    // Beginning of the reward cycle was at that same timestamp
     vm.mockCall(
       keep3r, abi.encodeWithSelector(IKeep3rV2.rewardedAt.selector), abi.encode(block.timestamp - COOLDOWN - 1)
     );
