@@ -168,7 +168,7 @@ contract HarvestSweepStealthJob is
 
     uint256 _rewardPeriodTime = IKeep3rV2(keep3r).rewardPeriodTime();
 
-    // Compute the begining of the period (take into account the job might have not been worked during previous periods)
+    // Compute the beginning of the period (take into account the job might have not been worked during previous periods)
     uint256 _periodStart = _rewardedAt + _rewardPeriodTime * ((block.timestamp - _rewardedAt) / _rewardPeriodTime);
 
     uint256 _nextPeriodStart = _periodStart + _rewardPeriodTime;
