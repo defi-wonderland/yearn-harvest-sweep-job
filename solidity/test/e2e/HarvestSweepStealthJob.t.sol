@@ -156,35 +156,9 @@ contract E2EHarvestSweepStealthJob is Test {
     // Adding the 21k of a normal tx from an EOA
     _gasUsed = _gasUsed - gasleft() + 21_000;
 
-    // ------------------------------------
-    // TS test: expected reward is x120/100 ?
-
-    // FIX GAS ASSERTEQ
-
-    // Check: Received correct reward?
+    // Check: Received a reward which is at least the work completed?
     uint256 _expectedReward = _getExpectedReward(_gasUsed);
-    // assertApproxEqAbs(keep3rV2.workCompleted(keeper) - _previousWorkCompleted, _expectedReward, 0.015 ether); // 0.015KPR
-
-    emit log_string('work completed ');
-    emit log_uint(keep3rV2.workCompleted(keeper) - _previousWorkCompleted);
-    emit log_string('expected reward ');
-    emit log_uint(_expectedReward);
-
-    emit log_string('gas consumed * 52gwei ');
-    emit log_uint(((541_474) + 21_000) * 52 * 10 ** 9);
-
-    uint32 _twapTime = 600;
-    (int24 _meanTick,) = OracleLibrary.consult(KP3R_WETH_V3_POOL_ADDRESS, _twapTime);
-
-    emit log_string('quote at tick for work completed ');
-    emit log_uint(
-      OracleLibrary.getQuoteAtTick(
-        _meanTick,
-        uint128(keep3rV2.workCompleted(keeper) - _previousWorkCompleted),
-        KP3R_WETH_V3_POOL_ADDRESS,
-        WETH_ADDRESS
-      )
-      );
+    assertGt(_expectedReward, keep3rV2.workCompleted(keeper) - _previousWorkCompleted);
   }
 
   /**
@@ -203,6 +177,9 @@ contract E2EHarvestSweepStealthJob is Test {
     // Warp at the end of a credit window
     vm.warp(_lastReward + _rewardPeriodTime + (_rewardPeriodTime - 1));
 
+    // Keep track of the work completed previously
+    uint256 _previousWorkCompleted = keep3rV2.workCompleted(keeper);
+
     // Check: Correct events emitted?
     vm.expectEmit(true, true, true, true, address(STRATEGY));
     emit Harvested(0, 1, 0, 0);
@@ -216,10 +193,20 @@ contract E2EHarvestSweepStealthJob is Test {
     // Prank both msg.sender and tx.origin (EOA check)
     vm.startPrank(keeper, keeper);
 
+    // Track the gas consumption
+    uint256 _gasUsed = gasleft();
+
     // Work the job
     stealthRelayer.executeAndPay(
       address(job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
     );
+
+    // Adding the 21k of a normal tx from an EOA
+    _gasUsed = _gasUsed - gasleft() + 21_000;
+
+    // Check: Received a reward which is at least the work completed?
+    uint256 _expectedReward = _getExpectedReward(_gasUsed);
+    assertGt(_expectedReward, keep3rV2.workCompleted(keeper) - _previousWorkCompleted);
   }
 
   /**
