@@ -53,11 +53,12 @@ contract HarvestSweepStealthJob is
     _setStealthRelayer(_stealthRelayer);
     _setKeep3rRequirements(_bond, _minBond, _earned, _age);
     _setOnlyEOA(_onlyEOA);
-    _setGasBonus(157_200); // calculated fixed bonus to compensate unaccounted gas (higher in sweep/extra call)
+    _setGasBonus(143_200); // calculated fixed bonus to compensate unaccounted gas (higher in sweep/extra call)
     _setGasMultiplier((gasMultiplier * 850) / 1000); // expected 15% refunded gas
 
-    sweepingParams.sweepingPeriodStartAt = uint128(block.timestamp);
-    sweepingParams.creditOptimisationWindow = uint128(1 hours);
+    sweepingParams.sweepingPeriodStartAt = uint64(block.timestamp);
+    sweepingParams.creditOptimisationWindow = uint64(1 hours);
+    sweepingParams.sweepGasBonus = uint64(14_500);
   }
 
   // views
@@ -102,18 +103,27 @@ contract HarvestSweepStealthJob is
 
     // Measure gas and pay the keeper
     uint256 _gasAfterWork = _getGasLeft();
-    uint256 _reward = IKeep3rHelper(keep3rHelper).getRewardAmountFor(_keeper, _initialGas - _gasAfterWork + gasBonus);
+
+    // If sweeping, add the unaccounted gas for the call to rewardedAt and event
+    uint256 _reward = IKeep3rHelper(keep3rHelper).getRewardAmountFor(
+      _keeper,
+      _sweepOldOnes == 0
+        ? _initialGas - _gasAfterWork + gasBonus
+        : _initialGas - _gasAfterWork + gasBonus + sweepingParams.sweepGasBonus
+    );
     _reward = (_reward * gasMultiplier) / BASE;
     IKeep3rV2(keep3r).bondedPayment(_keeper, _reward);
 
     emit GasMetered(_initialGas, _gasAfterWork, gasBonus);
 
-    if (_sweepOldOnes == 1) emit SweepingOldStrategy(_strategy);
+    if (_sweepOldOnes == 1) {
+      emit SweepingOldStrategy(_strategy);
 
-    // If we are in the credit optimisation window and we worked an old strategy, ensure we dont use liquidity credits
-    // (this would reset the rewardedAt)
-    if (_sweepOldOnes == 1 && IKeep3rV2(keep3r).rewardedAt(address(this)) == block.timestamp) {
-      revert ExtraCreditUsed();
+      // If we are in the credit optimisation window and we worked an old strategy, ensure we dont use liquidity credits
+      // (this would reset the rewardedAt)
+      if (IKeep3rV2(keep3r).rewardedAt(address(this)) == block.timestamp) {
+        revert ExtraCreditUsed();
+      }
     }
   }
 
@@ -130,17 +140,24 @@ contract HarvestSweepStealthJob is
   }
 
   /// @inheritdoc IV2Keep3rCreditWindow
-  function setCreditWindow(uint128 _window) external onlyGovernorOrMechanic {
+  function setCreditWindow(uint64 _window) external onlyGovernorOrMechanic {
     sweepingParams.creditOptimisationWindow = _window;
 
     emit CreditOptimisationWindowModified(_window);
   }
 
   /// @inheritdoc IV2Keep3rCreditWindow
-  function setSweepingStart(uint128 _sweepingPeriodStart) external onlyGovernorOrMechanic {
+  function setSweepingStart(uint64 _sweepingPeriodStart) external onlyGovernorOrMechanic {
     sweepingParams.sweepingPeriodStartAt = _sweepingPeriodStart;
 
     emit SweepingStartModified(_sweepingPeriodStart);
+  }
+
+  /// @inheritdoc IV2Keep3rCreditWindow
+  function setSweepingBonus(uint64 _sweepGasBonus) external onlyGovernorOrMechanic {
+    sweepingParams.sweepGasBonus = _sweepGasBonus;
+
+    emit SweepingBonusModified(_sweepGasBonus);
   }
 
   // internals
