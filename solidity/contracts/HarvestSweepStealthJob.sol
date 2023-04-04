@@ -80,10 +80,10 @@ contract HarvestSweepStealthJob is
     // Are we trying to work an old strategy while in during the credit optimisation window?
     uint256 _sweepOldOnes; // Act as a bool
 
-    // Cooldown or not added?
+    // Is the strategy in cooldown or not added?
     if (!super._workable(_strategy)) revert StrategyNotWorkable();
 
-    // Is the strategy profitable? If so, just work it
+    // Is the strategy profitable?
     if (!IBaseStrategy(_strategy).harvestTrigger(_getCallCosts(_strategy))) {
       // If not, are we in the credit optimisation window and is the strategy old enough?
       if (_isWorkableDuringWindow(_strategy)) {
