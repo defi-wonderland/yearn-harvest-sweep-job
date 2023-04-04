@@ -263,10 +263,10 @@ contract HarvestSweepStealthJobTest is Test {
 
     // Set a 1h sweep window
     vm.prank(governor);
-    harvestJob.setCreditWindow(uint128(_creditWindow));
+    harvestJob.setCreditWindow(uint64(_creditWindow));
 
     // The initial beginning of the sweeping window is the job deployment timestamp (ie no strategy could have been worked before)
-    (uint128 _deployment,) = harvestJob.sweepingParams();
+    (uint128 _deployment,,) = harvestJob.sweepingParams();
 
     // Set the last work at to the beginning of the sweeping window
     harvestJob.internalSetLastWorkAt(strategy, _deployment);
@@ -301,9 +301,9 @@ contract HarvestSweepStealthJobTest is Test {
 
     // Set a 1h sweep window
     vm.prank(governor);
-    harvestJob.setCreditWindow(uint128(_creditWindow));
+    harvestJob.setCreditWindow(uint64(_creditWindow));
 
-    (uint128 _deployment,) = harvestJob.sweepingParams();
+    (uint128 _deployment,,) = harvestJob.sweepingParams();
 
     // Set the last work at the begining of the 1-week reward period
     harvestJob.internalSetLastWorkAt(strategy, _deployment);
@@ -382,7 +382,7 @@ contract HarvestSweepStealthJobTest is Test {
 
     // Set a 1h sweep window
     vm.prank(governor);
-    harvestJob.setCreditWindow(uint128(_creditWindow));
+    harvestJob.setCreditWindow(uint64(_creditWindow));
 
     // Warp to 1sec before the next period, at the end of the sweeping window
     vm.warp(_nextPeriodStartAt - 1);
