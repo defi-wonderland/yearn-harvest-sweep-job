@@ -18,6 +18,9 @@ import {OracleLibrary} from '@uniswap/v3-periphery/contracts/libraries/OracleLib
 import {Test} from 'forge-std/Test.sol';
 
 /**
+ * @dev The tests for gas and reward are merged into the old hardhat repo, these are strictly
+ *      workability ones
+ *
  * name: 'StargateUSDCStaker',
  *     address: '0x7c85c0a8e2a45eeff98a10b6037f70daf714b7cf',
  *     block: 15514011,
@@ -132,9 +135,6 @@ contract E2EHarvestSweepStealthJob is Test {
     // Warp to the very begining of the next period (for bonded )
     vm.warp(_lastReward + _rewardPeriodTime + 1);
 
-    // Keep track of the work completed previously
-    uint256 _previousWorkCompleted = keep3rV2.workCompleted(keeper);
-
     // Check: Correct events emitted?
     vm.expectEmit(true, true, true, true, address(STRATEGY));
     emit Harvested(0, 1, 0, 0);
@@ -145,20 +145,10 @@ contract E2EHarvestSweepStealthJob is Test {
     // Prank both msg.sender and tx.origin
     vm.prank(keeper, keeper);
 
-    // Track the gas consumption
-    uint256 _gasUsed = gasleft();
-
     // Work the job
     stealthRelayer.executeAndPay(
       address(job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
     );
-
-    // Adding the 21k of a normal tx from an EOA
-    _gasUsed = _gasUsed - gasleft() + 21_000;
-
-    // Check: Received a reward which is at least the work completed?
-    uint256 _expectedReward = _getExpectedReward(_gasUsed);
-    assertGt(_expectedReward, keep3rV2.workCompleted(keeper) - _previousWorkCompleted);
   }
 
   /**
@@ -177,9 +167,6 @@ contract E2EHarvestSweepStealthJob is Test {
     // Warp at the end of a credit window
     vm.warp(_lastReward + _rewardPeriodTime + (_rewardPeriodTime - 1));
 
-    // Keep track of the work completed previously
-    uint256 _previousWorkCompleted = keep3rV2.workCompleted(keeper);
-
     // Check: Correct events emitted?
     vm.expectEmit(true, true, true, true, address(STRATEGY));
     emit Harvested(0, 1, 0, 0);
@@ -193,20 +180,10 @@ contract E2EHarvestSweepStealthJob is Test {
     // Prank both msg.sender and tx.origin (EOA check)
     vm.startPrank(keeper, keeper);
 
-    // Track the gas consumption
-    uint256 _gasUsed = gasleft();
-
     // Work the job
     stealthRelayer.executeAndPay(
       address(job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
     );
-
-    // Adding the 21k of a normal tx from an EOA
-    _gasUsed = _gasUsed - gasleft() + 21_000;
-
-    // Check: Received a reward which is at least the work completed?
-    uint256 _expectedReward = _getExpectedReward(_gasUsed);
-    assertGt(_expectedReward, keep3rV2.workCompleted(keeper) - _previousWorkCompleted);
   }
 
   /**
@@ -235,16 +212,6 @@ contract E2EHarvestSweepStealthJob is Test {
     // Work the job
     stealthRelayer.executeAndPay(
       address(job), abi.encodeWithSignature('work(address)', STRATEGY), 'random', block.number, 0
-    );
-  }
-
-  function _getExpectedReward(uint256 _gasUsed) internal view returns (uint256 _expectedReward) {
-    // Get the twap
-    uint32 _twapTime = 600;
-    (int24 _meanTick,) = OracleLibrary.consult(KP3R_WETH_V3_POOL_ADDRESS, _twapTime);
-
-    _expectedReward = OracleLibrary.getQuoteAtTick(
-      _meanTick, uint128(_gasUsed * block.basefee), WETH_ADDRESS, KP3R_WETH_V3_POOL_ADDRESS
     );
   }
 }

@@ -18,8 +18,8 @@ pragma solidity >=0.8.9 <0.9.0;
 import {V2KeeperJobPacked, StrategiesPackedSet, IV2KeeperJob, IBaseStrategy} from './V2KeeperJobPacked.sol';
 import {Pausable} from './utils/Pausable.sol';
 import {Keep3rMeteredStealthJob, IKeep3rV2, IStealthRelayer, IKeep3rHelper} from './utils/Keep3rMeteredStealthJob.sol';
-import {IV2Keep3rCreditWindow} from 'interfaces/IV2Keep3rCreditWindow.sol';
-import {IV2Keep3rStealthJob} from 'interfaces/IV2Keep3rStealthJob.sol';
+import {IV2Keep3rCreditWindow} from '../interfaces/IV2Keep3rCreditWindow.sol';
+import {IV2Keep3rStealthJob} from '../interfaces/IV2Keep3rStealthJob.sol';
 
 contract HarvestSweepStealthJob is
   IV2Keep3rCreditWindow,
@@ -53,7 +53,7 @@ contract HarvestSweepStealthJob is
     _setStealthRelayer(_stealthRelayer);
     _setKeep3rRequirements(_bond, _minBond, _earned, _age);
     _setOnlyEOA(_onlyEOA);
-    _setGasBonus(143_200); // calculated fixed bonus to compensate unaccounted gas
+    _setGasBonus(157_200); // calculated fixed bonus to compensate unaccounted gas (higher in sweep/extra call)
     _setGasMultiplier((gasMultiplier * 850) / 1000); // expected 15% refunded gas
 
     sweepingParams.sweepingPeriodStartAt = uint128(block.timestamp);
@@ -80,10 +80,10 @@ contract HarvestSweepStealthJob is
     // Are we trying to work an old strategy while in during the credit optimisation window?
     uint256 _sweepOldOnes; // Act as a bool
 
-    // Is the strategy in cooldown or not added?
+    // Cooldown or not added?
     if (!super._workable(_strategy)) revert StrategyNotWorkable();
 
-    // Is the strategy profitable?
+    // Is the strategy profitable? If so, just work it
     if (!IBaseStrategy(_strategy).harvestTrigger(_getCallCosts(_strategy))) {
       // If not, are we in the credit optimisation window and is the strategy old enough?
       if (_isWorkableDuringWindow(_strategy)) {
@@ -98,6 +98,7 @@ contract HarvestSweepStealthJob is
     // Work it
     _availableStrategies.setLastWorkAt(_strategy, block.timestamp);
     _work(_strategy);
+    emit KeeperWorked(_strategy);
 
     // Measure gas and pay the keeper
     uint256 _gasAfterWork = _getGasLeft();
@@ -105,8 +106,8 @@ contract HarvestSweepStealthJob is
     _reward = (_reward * gasMultiplier) / BASE;
     IKeep3rV2(keep3r).bondedPayment(_keeper, _reward);
 
-    emit KeeperWorked(_strategy);
     emit GasMetered(_initialGas, _gasAfterWork, gasBonus);
+
     if (_sweepOldOnes == 1) emit SweepingOldStrategy(_strategy);
 
     // If we are in the credit optimisation window and we worked an old strategy, ensure we dont use liquidity credits
