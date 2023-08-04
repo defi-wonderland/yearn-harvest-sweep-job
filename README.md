@@ -1,110 +1,11 @@
-<img src="https://raw.githubusercontent.com/defi-wonderland/brand/v1.0.0/external/solidity-foundry-boilerplate-banner.png" alt="wonderland banner" align="center" />
-<br />
+# Harvest Sweep Stealth Job
 
-<div align="center"><strong>Start your next Solidity project with Foundry in seconds</strong></div>
-<div align="center">A highly scalable foundation focused on DX and best practices</div>
+Build on top of the stealth harvest, this job adds 2 new features:
+- Sweep: Sweep old strategies which are not profitable, during a defined period of time, at the end of a reward period, using only any extra credit left.
+- Packed set strategies: Instead of using 3 different storage slots in v2keeper, with OpenZeppelin Enumerable set for the strategy addresses, this uses a packed struct with the address-last work timestamp-required gas amount within a single storage slot, reducing gas consumption a lot (as these 3 are accessed within the same context).
 
-<br />
+Sweep mechanic:
+![image](https://user-images.githubusercontent.com/83670532/225085034-8c97ac86-52a2-4a9d-b45b-c71dc25c3730.png)
 
-## Features
 
-<dl>
-  <dt>Sample contracts</dt>
-  <dd>Basic Greeter contract with an external interface.</dd>
-
-  <dt>Foundry setup</dt>
-  <dd>Foundry configuration with multiple custom profiles and remappings.</dd>
-
-  <dt>Deployment scripts</dt>
-  <dd>Sample scripts to deploy contracts on both mainnet and testnet.</dd>
-
-  <dt>Sample e2e & unit tests</dt>
-  <dd>Example tests showcasing mocking, assertions and configuration for mainnet forking. As well it includes everything needed in order to check code coverage.</dd>
-
-  <dt>Linter</dt>
-  <dd>Simple and fast solidity linting thanks to forge fmt</a>.</dd>
-
-  <dt>Github workflows CI</dt>
-  <dd>Run all tests and see the coverage as you push your changes.</dd>
-</dl>
-
-## Setup
-
-1. Install Foundry by following the instructions from [their repository](https://github.com/foundry-rs/foundry#installation).
-2. Copy the `.env.example` file to `.env` and fill in the variables
-3. Install the dependencies by running : `yarn install && forge install`
-
-## Build
-
-The default way to build the code is suboptimal but fast, you can run it via:
-
-```bash
-yarn build
-```
-
-In order to build a more optimized code ([via IR](https://docs.soliditylang.org/en/v0.8.15/ir-breaking-changes.html#solidity-ir-based-codegen-changes)), run:
-
-```bash
-yarn build:optimized
-```
-
-## Running tests
-
-Unit tests should be isolated from any externalities, while E2E usually run in a fork of the blockchain. In this boilerplate you will find example of both.
-
-In order to run both unit and E2E tests, run:
-
-```bash
-yarn test
-```
-
-In order to just run unit tests, run:
-
-```bash
-yarn test:unit
-```
-
-In order to run unit tests and run way more fuzzing than usual (5x), run:
-
-```bash
-yarn test:unit:deep
-```
-
-In order to just run e2e tests, run:
-
-```bash
-yarn test:e2e
-```
-
-In order to check your current code coverage, run:
-
-```bash
-yarn coverage
-```
-
-> **⚠ WARNING: Forge coverage is having some issues...**  
-> As stated in this [github issue](https://github.com/foundry-rs/foundry/issues/2165), checking the code coverage with Forge when using abstract contract is not currently working.
-
-<br>
-
-## Deploy & verify
-
-### Setup
-
-Configure the `.env` variables.
-
-### Rinkeby
-
-```bash
-yarn deploy:rinkeby
-```
-
-### Mainnet
-
-```bash
-yarn deploy:mainnet
-```
-
-The deployments are stored in ./broadcast
-
-See the [Foundry Book for available options](https://book.getfoundry.sh/reference/forge/forge-create.html).
+This repo is [Foundry powered](https://book.getfoundry.sh/), see [the template commands](https://github.com/defi-wonderland/solidity-hardhat-boilerplate) for a list of available functionnalities.

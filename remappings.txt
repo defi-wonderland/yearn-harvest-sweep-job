@@ -2,6 +2,10 @@ ds-test/=lib/ds-test/src
 prb/test/=lib/prb-test/src/
 forge-std/=lib/forge-std/src
 isolmate/=lib/isolmate/src
+@yearn-mechanics/contract-utils=lib/contract-utils
+@openzeppelin/=lib/openzeppelin-contracts/
+@uniswap/v3-periphery=lib/v3-periphery
+@uniswap/v3-core=lib/v3-core
 
 contracts/=solidity/contracts
 interfaces/=solidity/interfaces
